@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { getPlayer } from "./controllers/players-controllers";
 
 // Create a function to create the Express app
 function createApp() {
@@ -7,9 +8,8 @@ function createApp() {
   // Create a middleware to parse JSON request bodies
   app.use(express.json());
 
-  app.get("/", (req: Request, res: Response) => {
-    res.status(200).json({ player: "messi" });
-  });
+  // Create a route to handle GET requests to the root path
+  app.get("/", getPlayer);
 
   return app;
 };
