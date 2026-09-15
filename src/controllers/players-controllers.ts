@@ -1,10 +1,30 @@
 import type { Request, Response } from "express";
-import { getPlayerService } from "../services/players-services";
+import * as service from "../services/players-services";
+import { Messages, badRequest } from "../utils/htttp-helper";
 
 export const getPlayer = async (req: Request, res: Response) => {
   // Call the getPlayerService function to retrieve player data
-  const httpResponse = await getPlayerService();
+  const httpResponse = await service.getPlayerService();
 
   // Send the HTTP response with the appropriate status code and body
+  res.status(httpResponse.statusCode).json(httpResponse.body);
+};
+
+export const getPlayerById = async (
+  req: Request<{ id: string }>,
+  res: Response
+) => {
+  // Parse the ID from the request parameters and validate it
+  const id = parseInt(req.params.id, 10);
+
+  // Validate the ID to ensure it is a positive integer
+  if (!Number.isInteger(id) || id <= 0) {
+    const response = await badRequest(Messages.INVALID_ID);
+    return res
+      .status(response.statusCode)
+      .json({ message: response.body.message });
+  }
+
+  const httpResponse = await service.getPlayerByIdService(id);
   res.status(httpResponse.statusCode).json(httpResponse.body);
 };
