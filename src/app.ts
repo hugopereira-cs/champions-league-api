@@ -12,6 +12,6 @@ function createApp() {
   app.use("/api", router);
 
   return app;
-};
+}
 
 export default createApp;

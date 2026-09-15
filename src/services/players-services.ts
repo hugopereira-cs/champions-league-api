@@ -11,4 +11,4 @@ export const getPlayerService = async () => {
     response = await noContent();
   }
   return response;
-}
+};
