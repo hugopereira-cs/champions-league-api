@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import * as service from "../services/players-services";
-import { Messages, badRequest } from "../utils/htttp-helper";
+import { Messages, badRequest, created } from "../utils/htttp-helper";
 
 export const getPlayer = async (req: Request, res: Response) => {
   // Call the getPlayerService function to retrieve player data
@@ -27,4 +27,14 @@ export const getPlayerById = async (
 
   const httpResponse = await service.getPlayerByIdService(id);
   res.status(httpResponse.statusCode).json(httpResponse.body);
+};
+
+export const postPlayer = async (req: Request, res: Response) => {
+  // Extract player data from the request body
+  const bodyValue = req.body;
+
+  // Call the service function to create a new player
+  const httpResponse = await service.createPlayerService(bodyValue);
+
+  return res.status(httpResponse.statusCode).json(httpResponse.body);
 };

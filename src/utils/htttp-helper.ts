@@ -2,17 +2,25 @@ import type { HttpResponse } from "../models/httpResponse-model";
 
 export const HttpStatus = {
   OK: 200,
+  CREATED: 201,
   BAD_REQUEST: 400,
   NO_CONTENT: 204,
 } as const;
 
 export const Messages = {
   INVALID_ID: "Invalid ID",
+  INVALID_PLAYER: "Invalid player data",
+  PLAYER_CREATED: "Player created successfully",
 } as const;
 
 export const ok = async (data: unknown): Promise<HttpResponse> => ({
   statusCode: HttpStatus.OK,
   body: data,
+});
+
+export const created = async (message: string): Promise<HttpResponse> => ({
+  statusCode: HttpStatus.CREATED,
+  body: { message },
 });
 
 export const noContent = async (): Promise<HttpResponse>  => ({
