@@ -37,3 +37,20 @@ export const createPlayerService = async (player: PlayerModel) => {
 
   return HttpResponse.created(HttpResponse.Messages.PLAYER_CREATED);
 };
+
+export const deletePlayerByIdService = async (id: number) => {
+  const deletePlayerId = id;
+  let data = await PlayerRepository.findAllPlayers();
+  const playerExists = data.some((player) => player.id === deletePlayerId);
+  let response = null;
+
+  if (playerExists) {
+    data = data.filter(player => player.id !== deletePlayerId);
+    await PlayerRepository.deletePlayerById(deletePlayerId);
+    response = await HttpResponse.ok(HttpResponse.Messages.PLAYER_DELETED);
+  } else {
+    response = await HttpResponse.notFound(HttpResponse.Messages.PLAYER_NOT_FOUND);
+  }
+
+  return response;
+}

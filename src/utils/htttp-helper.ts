@@ -11,6 +11,8 @@ export const Messages = {
   INVALID_ID: "Invalid ID",
   INVALID_PLAYER: "Invalid player data",
   PLAYER_CREATED: "Player created successfully",
+  PLAYER_DELETED: "Player deleted successfully",
+  PLAYER_NOT_FOUND: "Player not found",
 } as const;
 
 export const ok = async (data: unknown): Promise<HttpResponse> => ({
@@ -30,5 +32,10 @@ export const noContent = async (): Promise<HttpResponse>  => ({
 
 export const badRequest = async (message: string): Promise<HttpResponse> => ({
   statusCode: HttpStatus.BAD_REQUEST,
+  body: { message },
+});
+
+export const notFound = async (message: string): Promise<HttpResponse> => ({
+  statusCode: 404,
   body: { message },
 });
