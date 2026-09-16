@@ -13,6 +13,7 @@ export const Messages = {
   PLAYER_CREATED: "Player created successfully",
   PLAYER_DELETED: "Player deleted successfully",
   PLAYER_NOT_FOUND: "Player not found",
+  PLAYER_UPDATED: "Player updated successfully",
 } as const;
 
 export const ok = async (data: unknown): Promise<HttpResponse> => ({
@@ -39,3 +40,5 @@ export const notFound = async (message: string): Promise<HttpResponse> => ({
   statusCode: 404,
   body: { message },
 });
+
+// Error 

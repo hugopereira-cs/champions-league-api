@@ -3,11 +3,11 @@ import * as PlayerController from "./controllers/players-controllers";
 
 const router = Router();
 
-// Create a route to handle GET requests to the /players path
 router.get("/players", PlayerController.getPlayer);
 router.post("/players", PlayerController.postPlayer);
-router.delete("/players/:id", PlayerController.deletePlayerById);
 
 router.get("/players/:id", PlayerController.getPlayerById);
+router.delete("/players/:id", PlayerController.deletePlayerById);
+router.patch("/players/:id", PlayerController.updatePlayerById);
 
 export default router;

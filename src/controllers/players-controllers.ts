@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import * as service from "../services/players-services";
 import { Messages, badRequest } from "../utils/htttp-helper";
+import { StatisticsModel } from "../models/statistics-model";
 
 export const getPlayer = async (req: Request, res: Response) => {
   // Call the getPlayerService function to retrieve player data
@@ -39,9 +40,32 @@ export const postPlayer = async (req: Request, res: Response) => {
   return res.status(httpResponse.statusCode).json(httpResponse.body);
 };
 
-export const deletePlayerById = async (req: Request<{ id: string }>, res: Response) => {
+export const deletePlayerById = async (
+  req: Request<{ id: string }>,
+  res: Response
+) => {
   // Parse the ID from the request parameters and validate it
   const id = parseInt(req.params.id, 10);
+
+  // Validate the ID to ensure it is a positive integer
+  if (!Number.isInteger(id) || id <= 0) {
+    const response = await badRequest(Messages.INVALID_ID);
+    return res
+      .status(response.statusCode)
+      .json({ message: response.body.message });
+  }
+
+  const httpResponse = await service.deletePlayerByIdService(id);
+  res.status(httpResponse.statusCode).json(httpResponse.body);
+};
+
+export const updatePlayerById = async (
+  req: Request<{ id: string }>,
+  res: Response
+) => {
+  // Parse the ID from the request parameters and validate it
+  const id = parseInt(req.params.id, 10);
+  const bodyValue: StatisticsModel = req.body;
 
   // Validate the ID to ensure it is a positive integer
   if (!Number.isInteger(id) || id <= 0) {
@@ -49,6 +73,6 @@ export const deletePlayerById = async (req: Request<{ id: string }>, res: Respon
     return res.status(response.statusCode).json({ message: response.body.message });
   }
 
-  const httpResponse = await service.deletePlayerByIdService(id);
+  const httpResponse = await service.updatePlayerByIdService(id, bodyValue);
   res.status(httpResponse.statusCode).json(httpResponse.body);
-}
+};

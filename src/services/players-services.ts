@@ -1,4 +1,5 @@
 import type { PlayerModel } from "../models/player-model";
+import { StatisticsModel } from "../models/statistics-model";
 import * as PlayerRepository from "../repositories/players-repository";
 import * as HttpResponse from "../utils/htttp-helper";
 
@@ -39,18 +40,35 @@ export const createPlayerService = async (player: PlayerModel) => {
 };
 
 export const deletePlayerByIdService = async (id: number) => {
-  const deletePlayerId = id;
-  let data = await PlayerRepository.findAllPlayers();
-  const playerExists = data.some((player) => player.id === deletePlayerId);
   let response = null;
+  const isDeleted = await PlayerRepository.deletePlayerById(id);
 
-  if (playerExists) {
-    data = data.filter(player => player.id !== deletePlayerId);
-    await PlayerRepository.deletePlayerById(deletePlayerId);
+  if (isDeleted) {
     response = await HttpResponse.ok(HttpResponse.Messages.PLAYER_DELETED);
   } else {
-    response = await HttpResponse.notFound(HttpResponse.Messages.PLAYER_NOT_FOUND);
+    response = await HttpResponse.notFound(
+      HttpResponse.Messages.PLAYER_NOT_FOUND
+    );
   }
 
   return response;
-}
+};
+
+export const updatePlayerByIdService = async (
+  id: number,
+  statistics: StatisticsModel
+) => {
+  if (!statistics || Object.keys(statistics).length === 0) {
+    return HttpResponse.badRequest(HttpResponse.Messages.INVALID_PLAYER);
+  }
+
+  const player = await PlayerRepository.findPlayerById(id);
+
+  if (!player) {
+    return HttpResponse.notFound(HttpResponse.Messages.PLAYER_NOT_FOUND);
+  }
+
+  await PlayerRepository.findAndModifyPlayerById(id, statistics);
+
+  return HttpResponse.ok(HttpResponse.Messages.PLAYER_UPDATED);
+};
