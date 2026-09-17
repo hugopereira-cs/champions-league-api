@@ -1,5 +1,6 @@
 import express from "express";
 import router from "./routes";
+import cors from "cors";
 
 // Create a function to create the Express app
 function createApp() {
@@ -10,6 +11,9 @@ function createApp() {
 
   // Use the router for handling routes
   app.use("/api", router);
+
+  // Enable CORS for all routes
+  app.use(cors());
 
   return app;
 }
