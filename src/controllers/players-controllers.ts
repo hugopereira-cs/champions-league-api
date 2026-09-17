@@ -1,7 +1,7 @@
-import type { Request, Response } from "express";
-import * as service from "../services/players-services";
 import { Messages, badRequest } from "../utils/htttp-helper";
-import { StatisticsModel } from "../models/statistics-model";
+import * as service from "../services/players-services";
+import type { Request, Response } from "express";
+import type { StatisticsModel } from "../models/statistics-model";
 
 export const getPlayer = async (req: Request, res: Response) => {
   // Call the getPlayerService function to retrieve player data
@@ -70,7 +70,9 @@ export const updatePlayerById = async (
   // Validate the ID to ensure it is a positive integer
   if (!Number.isInteger(id) || id <= 0) {
     const response = await badRequest(Messages.INVALID_ID);
-    return res.status(response.statusCode).json({ message: response.body.message });
+    return res
+      .status(response.statusCode)
+      .json({ message: response.body.message });
   }
 
   const httpResponse = await service.updatePlayerByIdService(id, bodyValue);

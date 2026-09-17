@@ -1,5 +1,5 @@
 import type { PlayerModel } from "../models/player-model";
-import { StatisticsModel } from "../models/statistics-model";
+import type { StatisticsModel } from "../models/statistics-model";
 import * as PlayerRepository from "../repositories/players-repository";
 import * as HttpResponse from "../utils/htttp-helper";
 
