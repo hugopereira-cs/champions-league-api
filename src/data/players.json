@@ -298,20 +298,5 @@
       "Dribbling": 99,
       "Physical": 99
     }
-  },
-  {
-    "id": 22,
-    "name": "Carlos Augusto",
-    "club": "Inter Milan",
-    "nationality": "Brazil",
-    "position": "LB",
-    "statistics": {
-      "Overall": 79,
-      "Pace": 86,
-      "Shooting": 63,
-      "Passing": 78,
-      "Dribbling": 78,
-      "Physical": 80
-    }
   }
 ]
