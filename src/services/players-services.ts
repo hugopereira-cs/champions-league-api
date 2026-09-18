@@ -3,7 +3,7 @@ import type { StatisticsModel } from "../models/statistics-model";
 import * as PlayerRepository from "../repositories/players-repository";
 import * as HttpResponse from "../utils/htttp-helper";
 
-export const getPlayerService = async () => {
+export const getPlayersService = async () => {
   const data = await PlayerRepository.findAllPlayers();
   let response = null;
 
@@ -23,7 +23,9 @@ export const getPlayerByIdService = async (id: number) => {
   if (data) {
     response = await HttpResponse.ok(data);
   } else {
-    response = await HttpResponse.noContent();
+    response = await HttpResponse.notFound(
+      HttpResponse.Messages.PLAYER_NOT_FOUND
+    );
   }
 
   return response;

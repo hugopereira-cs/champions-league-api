@@ -3,9 +3,9 @@ import * as service from "../services/players-services";
 import type { Request, Response } from "express";
 import type { StatisticsModel } from "../models/statistics-model";
 
-export const getPlayer = async (req: Request, res: Response) => {
-  // Call the getPlayerService function to retrieve player data
-  const httpResponse = await service.getPlayerService();
+export const getPlayers = async (req: Request, res: Response) => {
+  // Call the getPlayersService function to retrieve player data
+  const httpResponse = await service.getPlayersService();
 
   // Send the HTTP response with the appropriate status code and body
   res.status(httpResponse.statusCode).json(httpResponse.body);
