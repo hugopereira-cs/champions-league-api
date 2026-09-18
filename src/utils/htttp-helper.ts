@@ -14,6 +14,7 @@ export const Messages = {
   PLAYER_DELETED: "Player deleted successfully",
   PLAYER_NOT_FOUND: "Player not found",
   PLAYER_UPDATED: "Player updated successfully",
+  ID_EXISTS: "This ID already exists. Please choose a different ID.",
 } as const;
 
 export const ok = async (data: unknown): Promise<HttpResponse> => ({

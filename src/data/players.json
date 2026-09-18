@@ -6,12 +6,12 @@
     "nationality": "Argentina",
     "position": "ST",
     "statistics": {
-      "Overall": 89,
-      "Pace": 82,
-      "Shooting": 91,
-      "Passing": 79,
-      "Dribbling": 88,
-      "Physical": 85
+      "Overall": 99,
+      "Pace": 99,
+      "Shooting": 99,
+      "Passing": 99,
+      "Dribbling": 99,
+      "Physical": 99
     }
   },
   {
@@ -270,21 +270,6 @@
     }
   },
   {
-    "id": 19,
-    "name": "Bukayo Saka",
-    "club": "Arsenal",
-    "nationality": "England",
-    "position": "RW",
-    "statistics": {
-      "Overall": 88,
-      "Pace": 88,
-      "Shooting": 84,
-      "Passing": 86,
-      "Dribbling": 92,
-      "Physical": 76
-    }
-  },
-  {
     "id": 20,
     "name": "Martin Ødegaard",
     "club": "Arsenal",
@@ -297,6 +282,36 @@
       "Passing": 93,
       "Dribbling": 89,
       "Physical": 68
+    }
+  },
+  {
+    "id": 21,
+    "name": "Carlos Augusto",
+    "club": "Inter Milan",
+    "nationality": "Brazil",
+    "position": "LB",
+    "statistics": {
+      "Overall": 99,
+      "Pace": 99,
+      "Shooting": 99,
+      "Passing": 99,
+      "Dribbling": 99,
+      "Physical": 99
+    }
+  },
+  {
+    "id": 22,
+    "name": "Carlos Augusto",
+    "club": "Inter Milan",
+    "nationality": "Brazil",
+    "position": "LB",
+    "statistics": {
+      "Overall": 79,
+      "Pace": 86,
+      "Shooting": 63,
+      "Passing": 78,
+      "Dribbling": 78,
+      "Physical": 80
     }
   }
 ]
