@@ -10,7 +10,8 @@
     "start:dist": "npm run dist && node dist/src/server.js",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "seed": "tsx --env-file=.env src/database/seed.ts"
   },
   "keywords": [
     "node",
