@@ -1,7 +1,7 @@
 import type { PlayerModel } from "../models/player-model";
 import type { StatisticsModel } from "../models/statistics-model";
 import pool from "../database/connection";
-import fs from "node:fs/promises"
+import fs from "node:fs/promises";
 
 export const readPlayers = async (): Promise<PlayerModel[]> => {
   const result = await pool.query(
@@ -55,8 +55,47 @@ export const findAllPlayers = async (): Promise<PlayerModel[]> => {
 export const findPlayerById = async (
   id: number
 ): Promise<PlayerModel | undefined> => {
-  const players = await readPlayers();
-  return players.find((player) => player.id === id);
+  const result = await pool.query(
+    `
+      SELECT
+        p.id,
+        p.name,
+        p.nationality,
+        p.position,
+        p.club_id AS "clubId",
+        p.overall,
+        p.pace,
+        p.shooting,
+        p.passing,
+        p.dribbling,
+        p.physical,
+        c.name As club
+      FROM players p
+      INNER JOIN clubs c ON c.id = p.club_id
+      WHERE p.id = $1
+    `,
+    [id]
+  );
+
+  const row = result.rows[0];
+
+  if (!row) return undefined;
+
+  return {
+    id: row.id,
+    name: row.name,
+    club: row.club,
+    nationality: row.nationality,
+    position: row.position,
+    statistics: {
+      Overall: row.overall,
+      Pace: row.pace,
+      Shooting: row.shooting,
+      Passing: row.passing,
+      Dribbling: row.dribbling,
+      Physical: row.physical,
+    },
+  };
 };
 
 export const insertPlayer = async (player: PlayerModel) => {
