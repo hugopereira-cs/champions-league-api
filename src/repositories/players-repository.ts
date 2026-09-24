@@ -1,7 +1,6 @@
 import type { PlayerModel } from "../models/player-model";
 import type { StatisticsModel } from "../models/statistics-model";
 import pool from "../database/connection";
-import fs from "node:fs/promises";
 
 export const readPlayers = async (): Promise<PlayerModel[]> => {
   const result = await pool.query(
@@ -40,11 +39,6 @@ export const readPlayers = async (): Promise<PlayerModel[]> => {
       Physical: row.physical,
     },
   }));
-};
-
-export const writePlayers = async (players: PlayerModel[]): Promise<void> => {
-  const data = JSON.stringify(players, null, 2);
-  await fs.writeFile("./src/data/players.json", data, "utf-8");
 };
 
 export const findAllPlayers = async (): Promise<PlayerModel[]> => {
@@ -98,16 +92,55 @@ export const findPlayerById = async (
   };
 };
 
-export const insertPlayer = async (player: PlayerModel) => {
-  const players = await readPlayers();
-  const idExists = players.filter((p) => p.id === player.id).length > 0;
+export const insertPlayer = async (player: PlayerModel): Promise<boolean> => {
+  const clubResult = await pool.query(
+    `
+      SELECT id
+      FROM clubs
+      WHERE name = $1
+    `,
+    [player.club]
+  );
 
-  if (idExists) {
-    return true;
-  }
-  players.push(player);
-  await writePlayers(players);
-  return false;
+  const club = clubResult.rows[0];
+
+  if (!club) throw new Error(`Clube não encontrado: ${player.club}`);
+
+  const playerResult = await pool.query(
+    `
+      INSERT INTO players (
+        id,
+        name,
+        club_id,
+        nationality,
+        position,
+        overall,
+        pace,
+        shooting,
+        passing,
+        dribbling,
+        physical
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      ON CONFLICT (id) DO NOTHING
+      RETURNING id
+    `,
+    [
+      player.id,
+      player.name,
+      club.id,
+      player.nationality,
+      player.position,
+      player.statistics.Overall,
+      player.statistics.Pace,
+      player.statistics.Shooting,
+      player.statistics.Passing,
+      player.statistics.Dribbling,
+      player.statistics.Physical,
+    ]
+  );
+
+  return playerResult.rowCount === 0;
 };
 
 export const deletePlayerById = async (id: number): Promise<boolean> => {
