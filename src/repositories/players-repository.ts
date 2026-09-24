@@ -1,11 +1,45 @@
 import type { PlayerModel } from "../models/player-model";
 import type { StatisticsModel } from "../models/statistics-model";
-import fs from "node:fs/promises";
+import pool from "../database/connection";
+import fs from "node:fs/promises"
 
 export const readPlayers = async (): Promise<PlayerModel[]> => {
-  const data = await fs.readFile("./src/data/players.json", "utf-8");
-  const players: PlayerModel[] = JSON.parse(data);
-  return players;
+  const result = await pool.query(
+    `
+      SELECT
+        p.id,
+        p.name,
+        p.nationality,
+        p.position,
+        p.club_id AS "clubId",
+        p.overall,
+        p.pace,
+        p.shooting,
+        p.passing,
+        p.dribbling,
+        p.physical,
+        c.name As club
+      FROM players p
+      INNER JOIN clubs c ON c.id = p.club_id
+      ORDER BY p.id
+    `
+  );
+
+  return result.rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    club: row.club,
+    nationality: row.nationality,
+    position: row.position,
+    statistics: {
+      Overall: row.overall,
+      Pace: row.pace,
+      Shooting: row.shooting,
+      Passing: row.passing,
+      Dribbling: row.dribbling,
+      Physical: row.physical,
+    },
+  }));
 };
 
 export const writePlayers = async (players: PlayerModel[]): Promise<void> => {
