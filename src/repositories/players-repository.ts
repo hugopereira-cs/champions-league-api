@@ -126,13 +126,56 @@ export const findAndModifyPlayerById = async (
   id: number,
   statistics: StatisticsModel
 ): Promise<PlayerModel | undefined> => {
-  const players = await readPlayers();
-  const playerIndex = players.findIndex((player) => player.id === id);
+  const result = await pool.query(
+    `
+      UPDATE players
+      SET
+        overall = $1,
+        pace = $2,
+        shooting = $3,
+        passing = $4,
+        dribbling = $5,
+        physical = $6
+      WHERE id = $7
+      RETURNING id, name, nationality, position, club_id, overall, pace, shooting, passing, dribbling, physical
+    `,
+    [
+      statistics.Overall,
+      statistics.Pace,
+      statistics.Shooting,
+      statistics.Passing,
+      statistics.Dribbling,
+      statistics.Physical,
+      id,
+    ]
+  );
 
-  if (playerIndex !== -1) {
-    players[playerIndex].statistics = statistics;
-    await writePlayers(players);
-  }
+  const row = result.rows[0];
 
-  return players[playerIndex];
+  if (!row) return undefined;
+
+  const clubResult = await pool.query(
+    `
+      SELECT name
+      FROM clubs
+      WHERE id = $1
+    `,
+    [row.club_id]
+  );
+
+  return {
+    id: row.id,
+    name: row.name,
+    club: clubResult.rows[0].name,
+    nationality: row.nationality,
+    position: row.position,
+    statistics: {
+      Overall: row.overall,
+      Pace: row.pace,
+      Shooting: row.shooting,
+      Passing: row.passing,
+      Dribbling: row.dribbling,
+      Physical: row.physical,
+    },
+  };
 };
