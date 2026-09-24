@@ -110,16 +110,17 @@ export const insertPlayer = async (player: PlayerModel) => {
   return false;
 };
 
-export const deletePlayerById = async (id: number) => {
-  const players = await readPlayers();
-  const index = players.findIndex((player) => player.id === id);
+export const deletePlayerById = async (id: number): Promise<boolean> => {
+  const result = await pool.query(
+    `
+      DELETE FROM players
+      WHERE id = $1
+      RETURNING id
+    `,
+    [id]
+  );
 
-  if (index !== -1) {
-    players.splice(index, 1);
-    await writePlayers(players);
-    return true;
-  }
-  return false;
+  return result.rowCount === 1;
 };
 
 export const findAndModifyPlayerById = async (
