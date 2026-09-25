@@ -1,6 +1,22 @@
+import pool from "../database/connection";
 import type { PlayerModel } from "../models/player-model";
 import type { StatisticsModel } from "../models/statistics-model";
-import pool from "../database/connection";
+
+const mapPlayerRow = (row: any): PlayerModel => ({
+  id: row.id,
+  name: row.name,
+  club: row.club,
+  nationality: row.nationality,
+  position: row.position,
+  statistics: {
+    Overall: row.overall,
+    Pace: row.pace,
+    Shooting: row.shooting,
+    Passing: row.passing,
+    Dribbling: row.dribbling,
+    Physical: row.physical,
+  },
+});
 
 export const readPlayers = async (): Promise<PlayerModel[]> => {
   const result = await pool.query(
@@ -10,7 +26,6 @@ export const readPlayers = async (): Promise<PlayerModel[]> => {
         p.name,
         p.nationality,
         p.position,
-        p.club_id AS "clubId",
         p.overall,
         p.pace,
         p.shooting,
@@ -24,21 +39,7 @@ export const readPlayers = async (): Promise<PlayerModel[]> => {
     `
   );
 
-  return result.rows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    club: row.club,
-    nationality: row.nationality,
-    position: row.position,
-    statistics: {
-      Overall: row.overall,
-      Pace: row.pace,
-      Shooting: row.shooting,
-      Passing: row.passing,
-      Dribbling: row.dribbling,
-      Physical: row.physical,
-    },
-  }));
+  return result.rows.map(mapPlayerRow);
 };
 
 export const findAllPlayers = async (): Promise<PlayerModel[]> => {
@@ -56,7 +57,6 @@ export const findPlayerById = async (
         p.name,
         p.nationality,
         p.position,
-        p.club_id AS "clubId",
         p.overall,
         p.pace,
         p.shooting,
@@ -75,21 +75,7 @@ export const findPlayerById = async (
 
   if (!row) return undefined;
 
-  return {
-    id: row.id,
-    name: row.name,
-    club: row.club,
-    nationality: row.nationality,
-    position: row.position,
-    statistics: {
-      Overall: row.overall,
-      Pace: row.pace,
-      Shooting: row.shooting,
-      Passing: row.passing,
-      Dribbling: row.dribbling,
-      Physical: row.physical,
-    },
-  };
+  return mapPlayerRow(row);
 };
 
 type InsertPlayerResult = "created" | "id_exists" | "club_not_found";
@@ -177,8 +163,23 @@ export const findAndModifyPlayerById = async (
         dribbling = $5,
         physical = $6
       WHERE id = $7
-      RETURNING id, name, nationality, position, club_id, overall, pace, shooting, passing, dribbling, physical
-    `,
+      RETURNING
+        id,
+        name,
+        nationality,
+        position,
+        overall,
+        pace,
+        shooting,
+        passing,
+        dribbling,
+        physical,
+        (
+          SELECT name
+          FROM clubs
+          WHERE clubs.id = players.club_id
+        ) AS club
+  `,
     [
       statistics.Overall,
       statistics.Pace,
@@ -194,28 +195,5 @@ export const findAndModifyPlayerById = async (
 
   if (!row) return undefined;
 
-  const clubResult = await pool.query(
-    `
-      SELECT name
-      FROM clubs
-      WHERE id = $1
-    `,
-    [row.club_id]
-  );
-
-  return {
-    id: row.id,
-    name: row.name,
-    club: clubResult.rows[0].name,
-    nationality: row.nationality,
-    position: row.position,
-    statistics: {
-      Overall: row.overall,
-      Pace: row.pace,
-      Shooting: row.shooting,
-      Passing: row.passing,
-      Dribbling: row.dribbling,
-      Physical: row.physical,
-    },
-  };
+  return mapPlayerRow(row);
 };
