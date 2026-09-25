@@ -92,7 +92,11 @@ export const findPlayerById = async (
   };
 };
 
-export const insertPlayer = async (player: PlayerModel): Promise<boolean> => {
+type InsertPlayerResult = "created" | "id_exists" | "club_not_found";
+
+export const insertPlayer = async (
+  player: PlayerModel
+): Promise<InsertPlayerResult> => {
   const clubResult = await pool.query(
     `
       SELECT id
@@ -104,7 +108,7 @@ export const insertPlayer = async (player: PlayerModel): Promise<boolean> => {
 
   const club = clubResult.rows[0];
 
-  if (!club) throw new Error(`Clube não encontrado: ${player.club}`);
+  if (!club) return "club_not_found";
 
   const playerResult = await pool.query(
     `
@@ -140,7 +144,9 @@ export const insertPlayer = async (player: PlayerModel): Promise<boolean> => {
     ]
   );
 
-  return playerResult.rowCount === 0;
+  if (playerResult.rowCount === 0) return "id_exists";
+
+  return "created";
 };
 
 export const deletePlayerById = async (id: number): Promise<boolean> => {

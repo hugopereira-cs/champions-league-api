@@ -36,9 +36,9 @@ export const createPlayerService = async (player: PlayerModel) => {
     return HttpResponse.badRequest(HttpResponse.Messages.INVALID_PLAYER);
   }
 
-  const idExists = await PlayerRepository.insertPlayer(player);
+  const result = await PlayerRepository.insertPlayer(player);
 
-  if (idExists) {
+  if (result === "id_exists") {
     return HttpResponse.badRequest(HttpResponse.Messages.ID_EXISTS);
   }
 
