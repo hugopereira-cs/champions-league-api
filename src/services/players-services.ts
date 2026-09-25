@@ -40,6 +40,10 @@ export const createPlayerService = async (player: PlayerModel) => {
 
   if (result === "id_exists") {
     return HttpResponse.badRequest(HttpResponse.Messages.ID_EXISTS);
+  };
+
+  if (result === "club_not_found") {
+    return HttpResponse.badRequest(HttpResponse.Messages.CLUB_NOT_FOUND);
   }
 
   return HttpResponse.created(HttpResponse.Messages.PLAYER_CREATED);

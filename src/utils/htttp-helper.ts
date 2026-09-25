@@ -16,8 +16,7 @@ export const Messages = {
   PLAYER_NOT_FOUND: "Player not found",
   PLAYER_UPDATED: "Player updated successfully",
   ID_EXISTS: "This ID already exists. Please choose a different ID.",
-  CLUB_NOT_FOUND: "Club not found",
-  DATABASE_ERROR: "Database error"
+  CLUB_NOT_FOUND: "Club not found"
 } as const;
 
 export const ok = async (data: unknown): Promise<HttpResponse> => ({
