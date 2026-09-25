@@ -16,6 +16,8 @@ export const Messages = {
   PLAYER_NOT_FOUND: "Player not found",
   PLAYER_UPDATED: "Player updated successfully",
   ID_EXISTS: "This ID already exists. Please choose a different ID.",
+  CLUB_NOT_FOUND: "Club not found",
+  DATABASE_ERROR: "Database error"
 } as const;
 
 export const ok = async (data: unknown): Promise<HttpResponse> => ({
@@ -39,8 +41,6 @@ export const badRequest = async (message: string): Promise<HttpResponse> => ({
 });
 
 export const notFound = async (message: string): Promise<HttpResponse> => ({
-  statusCode: 404,
+  statusCode: HttpStatus.NOT_FOUND,
   body: { message },
 });
-
-// Error 
