@@ -1,6 +1,6 @@
 # Champions League API ⚽
 
-A REST API built with Node.js, Express, and TypeScript for managing Champions League clubs and players. The project uses JSON files as its data source and persistence layer.
+A REST API built with Node.js, Express, TypeScript, and PostgreSQL for managing Champions League clubs and players.
 
 ## ✨ Features
 
@@ -17,19 +17,21 @@ A REST API built with Node.js, Express, and TypeScript for managing Champions Le
 - Node.js
 - TypeScript
 - Express 5
+- PostgreSQL
+- `pg` for PostgreSQL access
 - CORS
 - Biome
 - `tsx` for development and watch mode
-- JSON files for data storage
 
 ## 📁 Project Structure
 
 ```text
 src/
 ├── controllers/    # HTTP request handlers
-├── data/           # JSON data files
+├── data/           # JSON source data used by the initial seed
+├── database/       # PostgreSQL connection, migration and seed
 ├── models/         # TypeScript interfaces
-├── repositories/   # File-based data access
+├── repositories/   # PostgreSQL data access
 ├── services/       # Application rules
 ├── app.ts          # Express application setup
 ├── routes.ts       # API routes
@@ -42,6 +44,7 @@ src/
 
 - Node.js
 - npm
+- PostgreSQL
 
 ### Installation
 
@@ -49,11 +52,40 @@ src/
 npm install
 ```
 
-Set the server port in a `.env` file:
+Create a PostgreSQL database, for example:
+
+```sql
+CREATE DATABASE champions_league;
+```
+
+Create a `.env` file in the project root with the server port and connection URL:
 
 ```env
-PORT=3000
+PORT=3333
+DATABASE_URL=postgresql://username:password@localhost:5432/champions_league
 ```
+
+Replace `username` and `password` with the PostgreSQL credentials for your local environment. Keep `.env` out of version control; it contains credentials.
+
+### Create the database tables
+
+Run the initial SQL migration from the project root:
+
+```bash
+psql -U username -d champions_league -f src/database/migrations/001-create-tables.sql
+```
+
+This creates the `clubs` and `players` tables. Each player references a club through `players.club_id`, and database constraints validate the relationship and the statistics range.
+
+### Import the initial data
+
+After creating the tables, run:
+
+```bash
+npm run seed
+```
+
+The seed reads `src/data/clubs.json` and `src/data/players.json`, then inserts the clubs and players into PostgreSQL. Clubs are inserted first because players reference them. This is an initial import script; do not run it again against an already populated database, because duplicate IDs will cause the transaction to fail.
 
 ### Run the API
 
@@ -69,7 +101,7 @@ Start the server with file watching enabled:
 npm run start:watch
 ```
 
-The server uses the port configured by `PORT` and exposes the API under the `/api` prefix.
+The server checks the PostgreSQL connection before listening. It uses the port configured by `PORT` and exposes the API under the `/api` prefix.
 
 ## 📡 API Endpoints
 
@@ -104,7 +136,7 @@ The server uses the port configured by `PORT` and exposes the API under the `/ap
 }
 ```
 
-The player ID must not already exist. A successful request returns `201 Created`.
+The player ID must not already exist, and `club` must match a club in the database. Each statistic must be an integer from `0` to `99`. A successful request returns `201 Created`.
 
 ### Update player statistics
 
@@ -130,6 +162,7 @@ The update replaces the selected player's existing `statistics` object.
 | `npm run start:dev`   | Start the development server                       |
 | `npm run start:watch` | Start the server in watch mode                     |
 | `npm run start:dist`  | Build and start the compiled server                |
+| `npm run seed`        | Import the initial JSON data into PostgreSQL        |
 | `npm run dist`        | Build the project with `tsdown`                    |
 | `npm run typecheck`   | Run the TypeScript compiler without emitting files |
 | `npm run lint`        | Check the project with Biome                       |
@@ -137,9 +170,4 @@ The update replaces the selected player's existing `statistics` object.
 
 ## 💾 Data Storage
 
-The API stores its data in:
-
-- `src/data/players.json`
-- `src/data/clubs.json`
-
-Player create, update, and delete operations write changes directly to `players.json`.
+PostgreSQL is the API's persistence layer. The JSON files in `src/data/` are retained as the source for the initial seed; after import, API reads and writes go directly to PostgreSQL.
