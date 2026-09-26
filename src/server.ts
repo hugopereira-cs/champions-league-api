@@ -6,7 +6,7 @@ const port = process.env.PORT;
 
 const startServer = async () => {
   try {
-    await pool.query("SELECT NOW()");
+    await pool.query("SELECT 1");
 
     app.listen(port, () => {
       console.log(`🔥 Server running at port http://localhost:${port}`);
