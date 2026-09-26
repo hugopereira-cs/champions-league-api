@@ -3,6 +3,21 @@ import type { StatisticsModel } from "../models/statistics-model";
 import * as PlayerRepository from "../repositories/players-repository";
 import * as HttpResponse from "../utils/htttp-helper";
 
+const hasInvalidStatistics = (statistics: StatisticsModel): boolean => {
+  const values = [
+    statistics.Overall,
+    statistics.Pace,
+    statistics.Shooting,
+    statistics.Passing,
+    statistics.Dribbling,
+    statistics.Physical,
+  ];
+
+  return values.some(
+    (value) => !Number.isInteger(value) || value < 0 || value > 99
+  );
+}
+
 export const getPlayersService = async () => {
   const data = await PlayerRepository.findAllPlayers();
   let response = null;
@@ -68,9 +83,10 @@ export const updatePlayerByIdService = async (
   id: number,
   statistics: StatisticsModel
 ) => {
-  if (!statistics || Object.keys(statistics).length === 0) {
-    return HttpResponse.badRequest(HttpResponse.Messages.INVALID_PLAYER);
+  if (!statistics || Object.keys(statistics).length === 0 || hasInvalidStatistics(statistics)) {
+    return HttpResponse.badRequest(HttpResponse.Messages.INVALID_PLAYER)
   }
+  
 
   const player = await PlayerRepository.findPlayerById(id);
 
